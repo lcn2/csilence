@@ -71,10 +71,10 @@ configure:
 	@echo nothing to configure
 
 clean:
-	@echo rule to clean or empty rule if nothing is built
+	@:
 
 clobber: clean
-	@echo rule to clobber or empty rule if nothing is built
+	@:
 
 install: all
 	${INSTALL} -m 0555 ${TARGETS} ${DESTDIR}
