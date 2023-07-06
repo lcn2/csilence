@@ -1,0 +1,215 @@
+#!/usr/bin/env bash
+#
+# csilence - determine CSILENCE values for cc, gcc and clang
+#
+# Copyright (c) 2023 by Landon Curt Noll.  All Rights Reserved.
+#
+# Permission to use, copy, modify, and distribute this software and
+# its documentation for any purpose and without fee is hereby granted,
+# provided that the above copyright, this permission notice and text
+# this comment, and the disclaimer below appear in all of the following:
+#
+#       supporting documentation
+#       source copies
+#       source works derived from this source
+#       binaries derived from this source or from derived source
+#
+# LANDON CURT NOLL DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,
+# INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO
+# EVENT SHALL LANDON CURT NOLL BE LIABLE FOR ANY SPECIAL, INDIRECT OR
+# CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF
+# USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+# OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+# PERFORMANCE OF THIS SOFTWARE.
+#
+# chongo (Landon Curt Noll, http://www.isthe.com/chongo/index.html) /\oo/\
+#
+# Share and enjoy! :-)
+
+# setup
+#
+export VERSION="1.0 2023-07-06"
+NAME=$(basename "$0")
+export NAME
+#
+export V_FLAG=0
+export CAP_C_FLAG=
+export C_FLAG=
+export G_FLAG=
+export PFMT="/usr/local/bin/pfmt"
+export PFMT_REPO="https://github.com/lcn2/pfmt"
+export CAP_P_FLAG=
+
+# usage
+#
+export USAGE="usage: $0 [-h] [-v level] [-V] [arg ..]
+
+	-h		print help message and exit
+	-v level	set verbosity level (def level: $V_FLAG)
+	-V		print version string and exit
+
+	-C		do not try make with CC not set
+	-c		do not try make using CC=clang
+	-g		do not try make using CC=gcc
+
+	-p path		path to pfmt (def: $PFMT)
+	-P		print CSILENCE= on CC=clang and CC=gcc runs (def: print CSILENCE+=)
+
+	arg		make args
+
+	NOTE: Try $0 -v 1 clobber all
+
+Exit codes:
+     0	    all OK
+     2	    -h and help string printed or -V and version string printed
+     3	    command line error
+     4	    cannot find pfmt (HINT: For pfmt see $PFMT_REPO)
+ >= 10	    internal error
+
+$NAME version: $VERSION"
+
+# parse command line
+#
+while getopts :hv:VCcgp:P flag; do
+  case "$flag" in
+    h) echo "$USAGE"
+	exit 2
+	;;
+    v) V_FLAG="$OPTARG"
+	;;
+    V) echo "$VERSION"
+	exit 2
+	;;
+    C) CAP_C_FLAG="true"
+	;;
+    c) C_FLAG="true"
+	;;
+    g) G_FLAG="true"
+	;;
+    p) PFMT="$OPTARG"
+	;;
+    P) CAP_P_FLAG="true"
+	;;
+    \?) echo "$0: ERROR: invalid option: -$OPTARG" 1>&2
+	echo 1>&2
+	echo "$USAGE" 1>&2
+	exit 3
+	;;
+    :) echo "$0: ERROR: option -$OPTARG requires an argument" 1>&2
+	echo 1>&2
+	echo "$USAGE" 1>&2
+	exit 3
+	;;
+    *) echo "$0: ERROR: unexpected value from getopts: $flag" 1>&2
+	echo 1>&2
+	echo "$USAGE" 1>&2
+	exit 3
+	;;
+  esac
+done
+if [[ $V_FLAG -ge 3 ]]; then
+    echo "$0: debug[3]: debug level: $V_FLAG" 1>&2
+fi
+#
+# remove the options
+#
+shift $(( OPTIND - 1 ));
+
+# firewall
+#
+if [[ ! -e $PFMT ]]; then
+    echo "$0: ERROR: pfmt does not exist: $PFMT" 1>&2
+    echo "$0: Note: for pfmt src see: $PFMT_REPO" 1>&2
+    exit 4
+fi
+if [[ ! -f $PFMT ]]; then
+    echo "$0: ERROR: pfmt is not a file: $PFMT" 1>&2
+    echo "$0: Note: for pfmt src see: $PFMT_REPO" 1>&2
+    exit 4
+fi
+if [[ ! -x $PFMT ]]; then
+    echo "$0: ERROR: pfmt is not executable: $PFMT" 1>&2
+    echo "$0: Note: for pfmt src see: $PFMT_REPO" 1>&2
+    exit 4
+fi
+
+# try make with CC not set (unless -C)
+#
+if [[ -z $CAP_C_FLAG ]]; then
+
+    # print compile type
+    #
+    if [[ $V_FLAG -ge 1 ]]; then
+	echo "$0: debug[1]: make $*" 1>&2
+	echo 1>&2
+    fi
+
+    # make
+    #
+    make "$@" 2>&1 |
+	grep -- '\[-W' | 
+	sed -e 's/^.*\[//' -e 's/\].*//' | 
+	sort -u | 
+	sed -e 's/-W/&no-/g' -e 's/,/ /g' | 
+	"$PFMT" -1 'CSILENCE= ' -e " \\"
+fi
+
+# try make with CC=clang (unless -c)
+#
+if [[ -z $C_FLAG ]]; then
+
+    # print compile type
+    #
+    if [[ $V_FLAG -ge 1 ]]; then
+	if [[ -z $CAP_C_FLAG ]]; then
+	    echo 1>&2
+	fi
+	echo "$0: debug[1]: make $* CC=clang" 1>&2
+	echo 1>&2
+    fi
+
+    # make
+    #
+    make "$@" CC=clang 2>&1 |
+	grep -- '\[-W' | 
+	sed -e 's/^.*\[//' -e 's/\].*//' | 
+	sort -u | 
+	sed -e 's/-W/&no-/g' -e 's/,/ /g' | 
+	if [[ -z $CAP_P_FLAG ]]; then
+	    "$PFMT" -1 'CSILENCE+= ' -e " \\"
+	else
+	    "$PFMT" -1 'CSILENCE= ' -e " \\"
+	fi
+fi
+
+# try make with CC=gcc (unless -g)
+#
+if [[ -z $G_FLAG ]]; then
+
+    # print compile type
+    #
+    if [[ $V_FLAG -ge 1 ]]; then
+	if [[ -z $C_FLAG ]]; then
+	    echo 1>&2
+	fi
+	echo "$0: debug[1]: make $* CC=gcc" 1>&2
+	echo 1>&2
+    fi
+
+    # make
+    #
+    make "$@" CC=gcc 2>&1 |
+	grep -- '\[-W' | 
+	sed -e 's/^.*\[//' -e 's/\].*//' | 
+	sort -u | 
+	sed -e 's/-W/&no-/g' -e 's/,/ /g' | 
+	if [[ -z $CAP_P_FLAG ]]; then
+	    "$PFMT" -1 'CSILENCE+= ' -e " \\"
+	else
+	    "$PFMT" -1 'CSILENCE= ' -e " \\"
+	fi
+fi
+
+# All Done!!! -- Jessica Noll, Age 2
+#
+exit 0
