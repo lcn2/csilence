@@ -28,7 +28,7 @@
 
 # setup
 #
-export VERSION="1.0.1 2023-07-07"
+export VERSION="1.0.2 2023-07-07"
 NAME=$(basename "$0")
 export NAME
 #
@@ -148,10 +148,10 @@ if [[ -z $CAP_C_FLAG ]]; then
     # make
     #
     make "$@" 2>&1 |
-	grep -- '\[-W' | 
-	sed -e 's/^.*\[//' -e 's/\].*//' | 
-	sort -u | 
-	sed -e 's/-W/&no-/g' -e 's/,/ /g' | 
+	grep -- '\[-W' |
+	sed -e 's/^.*\[//' -e 's/\].*//' |
+	sort -u |
+	sed -e 's/=$//' -e 's/-W/&no-/g' -e 's/,/ /g' |
 	"$PFMT" -1 'CSILENCE= ' -e " $BACKSLASH$BACKSLASH"
 fi
 
@@ -172,10 +172,10 @@ if [[ -z $C_FLAG ]]; then
     # make
     #
     make "$@" CC=clang 2>&1 |
-	grep -- '\[-W' | 
-	sed -e 's/^.*\[//' -e 's/\].*//' | 
-	sort -u | 
-	sed -e 's/-W/&no-/g' -e 's/,/ /g' | 
+	grep -- '\[-W' |
+	sed -e 's/^.*\[//' -e 's/\].*//' |
+	sort -u |
+	sed -e 's/=$//' -e 's/-W/&no-/g' -e 's/,/ /g' |
 	if [[ -z $CAP_P_FLAG ]]; then
 	    "$PFMT" -1 'CSILENCE+= ' -e " $BACKSLASH$BACKSLASH"
 	else
@@ -200,10 +200,10 @@ if [[ -z $G_FLAG ]]; then
     # make
     #
     make "$@" CC=gcc 2>&1 |
-	grep -- '\[-W' | 
-	sed -e 's/^.*\[//' -e 's/\].*//' | 
-	sort -u | 
-	sed -e 's/-W/&no-/g' -e 's/,/ /g' | 
+	grep -- '\[-W' |
+	sed -e 's/^.*\[//' -e 's/\].*//' |
+	sort -u |
+	sed -e 's/=$//' -e 's/-W/&no-/g' -e 's/,/ /g' |
 	if [[ -z $CAP_P_FLAG ]]; then
 	    "$PFMT" -1 'CSILENCE+= ' -e " $BACKSLASH$BACKSLASH"
 	else
