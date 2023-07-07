@@ -52,6 +52,7 @@ TARGETS= csilence
 ######################################
 
 all: ${TARGETS}
+	@${TRUE}
 
 csilence: csilence.sh
 	@${CP} -fv $< $@
