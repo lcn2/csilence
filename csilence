@@ -28,7 +28,7 @@
 
 # setup
 #
-export VERSION="1.0 2023-07-06"
+export VERSION="1.0.1 2023-07-07"
 NAME=$(basename "$0")
 export NAME
 #
@@ -39,6 +39,7 @@ export G_FLAG=
 export PFMT="/usr/local/bin/pfmt"
 export PFMT_REPO="https://github.com/lcn2/pfmt"
 export CAP_P_FLAG=
+export BACKSLASH=\\
 
 # usage
 #
@@ -151,7 +152,7 @@ if [[ -z $CAP_C_FLAG ]]; then
 	sed -e 's/^.*\[//' -e 's/\].*//' | 
 	sort -u | 
 	sed -e 's/-W/&no-/g' -e 's/,/ /g' | 
-	"$PFMT" -1 'CSILENCE= ' -e " \\"
+	"$PFMT" -1 'CSILENCE= ' -e " $BACKSLASH$BACKSLASH"
 fi
 
 # try make with CC=clang (unless -c)
@@ -176,9 +177,9 @@ if [[ -z $C_FLAG ]]; then
 	sort -u | 
 	sed -e 's/-W/&no-/g' -e 's/,/ /g' | 
 	if [[ -z $CAP_P_FLAG ]]; then
-	    "$PFMT" -1 'CSILENCE+= ' -e " \\"
+	    "$PFMT" -1 'CSILENCE+= ' -e " $BACKSLASH$BACKSLASH"
 	else
-	    "$PFMT" -1 'CSILENCE= ' -e " \\"
+	    "$PFMT" -1 'CSILENCE= ' -e " $BACKSLASH$BACKSLASH"
 	fi
 fi
 
@@ -204,9 +205,9 @@ if [[ -z $G_FLAG ]]; then
 	sort -u | 
 	sed -e 's/-W/&no-/g' -e 's/,/ /g' | 
 	if [[ -z $CAP_P_FLAG ]]; then
-	    "$PFMT" -1 'CSILENCE+= ' -e " \\"
+	    "$PFMT" -1 'CSILENCE+= ' -e " $BACKSLASH$BACKSLASH"
 	else
-	    "$PFMT" -1 'CSILENCE= ' -e " \\"
+	    "$PFMT" -1 'CSILENCE= ' -e " $BACKSLASH$BACKSLASH"
 	fi
 fi
 
