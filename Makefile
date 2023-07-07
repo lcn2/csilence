@@ -36,9 +36,7 @@ CP= cp
 INSTALL= install
 RM= rm
 SHELL= bash
-
-#CFLAGS= -O3 -g3 --pedantic -Wall -Werror
-CFLAGS= -O3 -g3 --pedantic -Wall
+TRUE= true
 
 ######################
 # target information #
@@ -46,6 +44,7 @@ CFLAGS= -O3 -g3 --pedantic -Wall
 
 DESTDIR= /usr/local/bin
 
+SH_FILES= csilence.sh
 TARGETS= csilence
 
 ######################################
@@ -54,7 +53,8 @@ TARGETS= csilence
 
 all: ${TARGETS}
 
-csilence:
+csilence: csilence.sh
+	@${CP} -fv $< $@
 	${CHMOD} +x $@
 
 #################################################
@@ -71,10 +71,10 @@ configure:
 	@echo nothing to configure
 
 clean:
-	@:
+	${RM} -fv ${TARGETS}
 
 clobber: clean
-	@:
+	@${TRUE}
 
 install: all
 	${INSTALL} -m 0555 ${TARGETS} ${DESTDIR}
