@@ -49,7 +49,7 @@ export USAGE="usage: $0 [-h] [-v level] [-V] [arg ..]
 	-v level	set verbosity level (def level: $V_FLAG)
 	-V		print version string and exit
 
-	-C		do not try make with CC not set
+	-C		do not try make with CC unset
 	-c		do not try make using CC=clang
 	-g		do not try make using CC=gcc
 
