@@ -139,3 +139,7 @@ CSILENCE+= -Wno-deprecated-non-prototype
 Thanks for reading and thanks for all the fish; we hope this document was useful
 in understanding the `csilence` tool!
 
+
+# Reporting Security Issues
+
+To report a security issue, please visit "[Reporting Security Issues](https://github.com/lcn2/csilence/security/policy)".
