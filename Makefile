@@ -42,7 +42,8 @@ TRUE= true
 # target information #
 ######################
 
-DESTDIR= /usr/local/bin
+PREFIX= /usr/local
+DESTDIR= ${PREFIX}/bin
 
 SH_FILES= csilence.sh
 TARGETS= csilence
