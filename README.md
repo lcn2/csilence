@@ -24,10 +24,10 @@ to `csilence` like so:
 make
 ```
 
-and then run as root or via sudo:
+and then run as root:
 
 ```sh
-make install
+sudp make install
 ```
 
 
@@ -36,8 +36,7 @@ make install
 To get the syntax of the tool, use the `-h` option like so:
 
 ```sh
-$ csilence -h
-usage: /usr/local/bin/csilence [-h] [-v level] [-V] [arg ..]
+/usr/local/bin/csilence [-h] [-v level] [-V] [arg ..]
 
 	-h		print help message and exit
 	-v level	set verbosity level (def level: 0)
@@ -81,12 +80,6 @@ The top level directory has subdirectories in the form of `YYYY/winner` which is
 why the path specified for `find(1)` is `????`. See below for example output.
 
 
-## Example output
-
-XXX - update the below and remove this XXX note once the [temp-test-ioccc
-repo](https://github.com/ioccc-src/temp-test-ioccc) has been folded into the
-[winner repo](https://github.com/ioccc-src/winner) - XXX
-
 ### Example output when the warnings are silenced
 
 Because no warnings are actually triggered for
@@ -95,7 +88,7 @@ Because no warnings are actually triggered for
 something like:
 
 
-```sh
+```
 =-=-= 1984/mullender =-=-=
 /usr/local/bin/csilence: debug[1]: make clobber all
 
@@ -115,7 +108,7 @@ If warnings are triggered, say as in
 [1984/laman](https://github.com/ioccc-src/winner/blob/master/1984/laman/laman.c),
 it might look like:
 
-```sh
+```
 =-=-= 1984/laman =-=-=
 /usr/local/bin/csilence: debug[1]: make clobber all
 
